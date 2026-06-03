@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Alex Brown",
+    "skills": ["Python", "Flask", "Azure"]
+  },
+  {
+    "name": "John Doe",
+    "skills": ["Java", "Spring", "SQL"]
+  },
+  {
+    "name": "Sarah Smith",
+    "skills": ["Python", "Machine Learning"]
+  }
+]

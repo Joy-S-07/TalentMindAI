@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Candidate Ranking</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+<h1>Candidate Ranking</h1>
+
+<textarea id="job" placeholder="Enter job description"></textarea>
+
+<button onclick="rankCandidates()">Rank</button>
+
+<div id="result"></div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
