@@ -3,6 +3,7 @@ import json
 from agents.candidate_agent import rank_candidates
 from agents.learning_agent import get_learning_path
 from agents.assessment_agent import assess_readiness
+from orchestrator.workflow_manager import generate_workforce_report
 
 app = Flask(__name__)
 
@@ -30,6 +31,26 @@ def assessment():
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
+@app.route(
+    "/api/workforce",
+    methods=["POST"]
+)
+def workforce():
+
+    data = request.json
+
+    role = data["role"]
+
+    candidates = load_json(
+        "data/candidates.json"
+    )
+
+    result = generate_workforce_report(
+        role,
+        candidates
+    )
+
+    return jsonify(result)
 
 
 # API ROUTES
@@ -64,6 +85,13 @@ def assessment_api():
 
     return jsonify(result)
 
+@app.route("/workforce")
+def workforce_page():
+    return render_template(
+        "workforce.html"
+    )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
+

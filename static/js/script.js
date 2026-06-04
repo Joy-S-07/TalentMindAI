@@ -18,12 +18,12 @@ function rankCandidates() {
 
         let output = "";
 
-        data.forEach(candidate => {
+        data.forEach((candidate, index) => {
 
             output += `
             <div class="candidate-card">
 
-                <h3>${candidate.name}</h3>
+                <h3>#${index + 1} ${candidate.name}</h3>
 
                 <p class="score">
                     Match Score: ${candidate.score}%
@@ -74,4 +74,90 @@ function checkAssessment() {
         document.getElementById("result").innerHTML =
             JSON.stringify(data, null, 2);
     });
+}
+
+function generateReport(){
+
+const role =
+document.getElementById(
+"role"
+).value;
+
+fetch(
+"/api/workforce",
+{
+method:"POST",
+
+headers:{
+"Content-Type":
+"application/json"
+},
+
+body:JSON.stringify({
+role:role
+})
+}
+)
+
+.then(res=>res.json())
+
+.then(data=>{
+
+document.getElementById(
+"result"
+).innerHTML = `
+
+<div class="candidate-card">
+
+<h2>
+Role:
+${data.role}
+</h2>
+
+<h3>
+Top Candidate:
+${data.top_candidate.name}
+</h3>
+
+<p>
+Match Score:
+${data.top_candidate.score}%
+</p>
+
+<hr>
+
+<h3>
+Missing Skills
+</h3>
+
+<p>
+${data.skill_gap.missing_skills}
+</p>
+
+<hr>
+
+<h3>
+Learning Path
+</h3>
+
+<p>
+${data.learning_path.path}
+</p>
+
+<hr>
+
+<h3>
+Readiness
+</h3>
+
+<p>
+${data.assessment.status}
+</p>
+
+</div>
+
+`;
+
+});
+
 }
