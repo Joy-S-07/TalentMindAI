@@ -11,7 +11,8 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 
 // Load environment variables FIRST
-dotenv.config();
+const path = require("path");
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
