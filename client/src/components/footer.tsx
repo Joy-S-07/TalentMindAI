@@ -13,27 +13,41 @@ export function Footer() {
                     </p>
                 </div>
                 
-                <div className="flex items-center gap-6">
-                    <a href="#" className="text-white/40 hover:text-indigo-300 transition-colors">
-                        <Globe className="h-5 w-5" />
-                        <span className="sr-only">Website</span>
-                    </a>
-                    <a href="#" className="text-white/40 hover:text-indigo-300 transition-colors">
-                        <MessageSquare className="h-5 w-5" />
-                        <span className="sr-only">Contact</span>
-                    </a>
-                    <a href="#" className="text-white/40 hover:text-indigo-300 transition-colors">
-                        <User className="h-5 w-5" />
-                        <span className="sr-only">Profile</span>
-                    </a>
+                <div className="flex items-center gap-4 text-sm text-white/50">
+                    <span>Developers:</span>
+                    <div className="flex items-center gap-3">
+                        {[
+                            { name: "Joy", url: "https://github.com/Joy-S-07" },
+                            { name: "Sneha", url: "https://github.com/SnehaBanik" },
+                            { name: "Jiya", url: "https://github.com/jiyabhowmick-collab" }
+                        ].map((dev) => (
+                            <a 
+                                key={dev.name}
+                                href={dev.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="group relative flex items-center justify-center"
+                                title={dev.name}
+                            >
+                                <img 
+                                    src={`${dev.url}.png`} 
+                                    alt={dev.name} 
+                                    className="h-8 w-8 rounded-full border border-white/10 group-hover:border-indigo-400 group-hover:scale-110 transition-all duration-300"
+                                />
+                                <span className="absolute -top-8 bg-black/80 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                                    {dev.name}
+                                </span>
+                            </a>
+                        ))}
+                    </div>
                 </div>
             </div>
             
             <div className="max-w-6xl mx-auto mt-12 pt-8 border-t border-white/[0.02] flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/30 font-light">
-                <p>© {new Date().getFullYear()} hack2skill POC. All rights reserved.</p>
+                <p>© {new Date().getFullYear()} TalentMindAI POC. All rights reserved.</p>
                 <div className="flex gap-4">
-                    <a href="#" className="hover:text-white/60 transition-colors">Privacy Policy</a>
-                    <a href="#" className="hover:text-white/60 transition-colors">Terms of Service</a>
+                    <a href="#" className="hover:text-white/60 transition-colors">Choose Skill</a>
+                    <a href="#" className="hover:text-white/60 transition-colors">Choose Perfect</a>
                 </div>
             </div>
         </footer>

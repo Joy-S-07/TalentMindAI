@@ -79,9 +79,9 @@ export default function DashboardPage() {
           {/* Header */}
           <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-              Candidate{" "}
+              Talent{" "}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-rose-300">
-                Ranking
+                Ranker
               </span>
             </h1>
             <p className="text-white/40 text-sm mt-3 max-w-lg mx-auto">

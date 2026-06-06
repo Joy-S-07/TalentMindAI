@@ -4,11 +4,9 @@
  * Uses credentials: "include" for HTTP-only cookie auth.
  */
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL as string;
 
-/* ------------------------------------------------------------------ */
-/*  Types                                                              */
-/* ------------------------------------------------------------------ */
+// Type definitions
 
 export interface AuthUser {
   _id: string;
@@ -40,9 +38,7 @@ export interface ResultsResponse {
 /** 0=uploading  1=processing  2=ranking  3=done */
 export type RankStep = 0 | 1 | 2 | 3;
 
-/* ------------------------------------------------------------------ */
-/*  Auth                                                               */
-/* ------------------------------------------------------------------ */
+// Authentication and session management
 
 export async function register(
   name: string,
@@ -104,12 +100,17 @@ export async function getMe(): Promise<{ user: AuthUser }> {
   return res.json();
 }
 
-/* ------------------------------------------------------------------ */
-/*  Auth-aware fetch helper                                            */
-/* ------------------------------------------------------------------ */
+// Helper wrapper around fetch that automatically injects the JWT token
 
 async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  const opts: RequestInit = { ...options, credentials: "include" };
+  // Inject the Bearer token from localStorage into every request
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const headers = new Headers(options.headers as HeadersInit | undefined);
+  if (token && !headers.has("Authorization")) {
+    headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  const opts: RequestInit = { ...options, headers, credentials: "include" };
   let res = await fetch(url, opts);
   if (res.status === 401) {
     try {
@@ -122,9 +123,7 @@ async function authFetch(url: string, options: RequestInit = {}): Promise<Respon
   return res;
 }
 
-/* ------------------------------------------------------------------ */
-/*  PART 2 — Upload + rank with step callbacks                         */
-/* ------------------------------------------------------------------ */
+// Upload and ranking pipeline execution
 
 export interface UploadAndRankCallbacks {
   /** Called each time the step index advances (0→1→2→3) */
@@ -239,9 +238,7 @@ export async function uploadAndRank(
   }
 }
 
-/* ------------------------------------------------------------------ */
-/*  Export CSV                                                         */
-/* ------------------------------------------------------------------ */
+// Export functionality for downloading results
 
 export async function exportCSV(jobId: string, tier: 10 | 50 | 100): Promise<void> {
   const res = await authFetch(`${API_BASE}/api/export/${jobId}/${tier}`);
@@ -260,9 +257,34 @@ export async function exportCSV(jobId: string, tier: 10 | 50 | 100): Promise<voi
   URL.revokeObjectURL(url);
 }
 
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
+// Ranking history management
+
+export interface RankingHistoryEntry {
+  _id: string;
+  jobId: string;
+  jobTitle: string;
+  jobDescriptionSnippet: string;
+  totalCandidates: number;
+  returnedCandidates: number;
+  fileName: string;
+  createdAt: string;
+}
+
+export async function fetchRankingHistory(): Promise<RankingHistoryEntry[]> {
+  const res = await authFetch(`${API_BASE}/api/history`);
+  if (!res.ok) throw new Error("Failed to fetch ranking history");
+  const data = await res.json();
+  return data.history ?? [];
+}
+
+export async function deleteRankingHistory(id: string): Promise<void> {
+  const res = await authFetch(`${API_BASE}/api/history/${id}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete entry");
+}
+
+// Utility functions
 
 function sleep(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -109,6 +110,11 @@ function HeroGeometric({
     title2?: string;
 }) {
     const router = useRouter();
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+    useEffect(() => {
+        setIsLoggedIn(!!localStorage.getItem("token"));
+    }, []);
 
     const fadeUpVariants = {
         hidden: { opacity: 0, y: 30 },
@@ -245,10 +251,10 @@ function HeroGeometric({
                         className="flex flex-col sm:flex-row items-center justify-center gap-4"
                     >
                         <HoverButton
-                            onClick={() => router.push('/dashboard')}
+                            onClick={() => router.push(isLoggedIn ? '/dashboard' : '/login')}
                             className="group relative inline-flex items-center gap-2"
                         >
-                            <span>Start Ranking</span>
+                            <span>{isLoggedIn === false ? "Sign up to Start Ranking" : "Start Ranking"}</span>
                             <svg
                                 className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 inline"
                                 fill="none"
@@ -260,7 +266,7 @@ function HeroGeometric({
                             </svg>
                         </HoverButton>
                         <a
-                            href="/features"
+                            href="/how-it-works"
                             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl border border-white/10 bg-white/[0.03] text-white/70 hover:text-white hover:border-indigo-500/40 hover:bg-white/[0.06] font-medium text-sm transition-all duration-300 hover:scale-105"
                         >
                             See How It Works

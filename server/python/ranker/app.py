@@ -9,7 +9,7 @@ NEVER run as:
 because relative imports ("from pipeline.X") break when cwd != the ranker dir.
 """
 
-# ── ISSUE 4: ensure cwd is always the directory containing this file ─────────
+# Ensure the working directory is set correctly to avoid import errors.
 import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -29,7 +29,7 @@ import numpy as np
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 
-# ── Logging (set up BEFORE imports so import errors are captured) ─────────────
+# Initialize logging before importing pipeline modules to capture any load errors.
 logging.basicConfig(
     level=logging.DEBUG,
     format="[%(asctime)s] %(levelname)s %(name)s: %(message)s",
@@ -37,7 +37,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("ranker")
 
-# ── ISSUE 1: wrap pipeline imports so a broken module never kills Flask ───────
+# Wrap imports so that a broken pipeline module doesn't crash the entire API server.
 try:
     from pipeline.jd_parser import parse_job_description
     from pipeline.candidate_normalizer import normalize_candidate
@@ -52,7 +52,7 @@ except Exception as _import_err:
     traceback.print_exc()
     PIPELINE_READY = False
 
-# ── App ───────────────────────────────────────────────────────────────────────
+# Initialize Flask App
 app = Flask(__name__)
 CORS(app)
 
@@ -73,9 +73,7 @@ def _set_progress(job_id: str, step: int, message: str, total: int = 0) -> None:
     logger.info("[%s] step=%d %s", job_id, step, message)
 
 
-# ---------------------------------------------------------------------------
-# ISSUE 3: catch-all 404 handler — shows registered routes for easy debugging
-# ---------------------------------------------------------------------------
+# Catch-all 404 handler that lists available routes for easier debugging.
 @app.errorhandler(404)
 def not_found(e):
     rules = [str(r) for r in app.url_map.iter_rules()]
@@ -106,9 +104,7 @@ def compress_response(response):
     return response
 
 
-# ---------------------------------------------------------------------------
-# ISSUE 2: health + index routes registered BEFORE any pipeline code
-# ---------------------------------------------------------------------------
+# Register health check routes before the heavy pipeline code.
 @app.route("/", methods=["GET"])
 def index():
     return jsonify({
@@ -415,6 +411,6 @@ def export_csv(job_id: str, tier: int):
 # Entry point
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    logger.info("Starting TalentMind ranker on http://localhost:5000")
+    logger.info("Starting TalentMind ranker on port 5000")
     logger.info("pipeline_ready=%s", PIPELINE_READY)
     app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=True)

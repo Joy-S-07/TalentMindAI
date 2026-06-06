@@ -5,6 +5,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { BGPattern } from "@/components/ui/bg-pattern";
 import { ProfileSettings } from "@/components/ProfileSettings";
+import { RankingHistorySection } from "@/components/RankingHistory";
 
 export default function ProfilePage() {
   return (
@@ -34,6 +35,9 @@ export default function ProfilePage() {
           </div>
 
           <ProfileSettings />
+
+          {/* Ranking History */}
+          <RankingHistorySection />
         </div>
       </div>
 

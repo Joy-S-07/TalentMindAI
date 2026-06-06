@@ -8,7 +8,7 @@ import Link from "next/link";
 import { BGPattern } from "@/components/ui/bg-pattern";
 import { HoverButton } from "@/components/ui/hover-button";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 export default function ResetPasswordPage() {
   const { token } = useParams<{ token: string }>();

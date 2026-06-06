@@ -15,10 +15,11 @@ import {
   Loader2,
   Check,
   LogOut,
+  Camera,
 } from "lucide-react";
 import { HoverButton } from "@/components/ui/hover-button";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+const API = process.env.NEXT_PUBLIC_API_URL;
 
 interface ProfileData {
   name: string;
@@ -146,6 +147,23 @@ export function ProfileSettings() {
     ? profile.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
     : "??";
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        setErrorMsg("Image must be smaller than 2MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditData((prev) => ({ ...prev, avatar: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const currentAvatar = isEditing ? editData.avatar : profile.avatar;
+
   return (
     <div className="space-y-8">
       {/* Profile Header Card */}
@@ -161,8 +179,29 @@ export function ProfileSettings() {
         <div className="px-6 md:px-8 pb-6 -mt-12">
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4">
             {/* Avatar */}
-            <div className="h-24 w-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-rose-400 flex items-center justify-center text-2xl font-bold text-white shadow-xl shadow-indigo-600/20 ring-4 ring-[#030303]">
-              {initials}
+            <div className="relative">
+              <div 
+                className={`h-24 w-24 rounded-2xl bg-gradient-to-br from-indigo-500 to-rose-400 flex items-center justify-center text-2xl font-bold text-white shadow-xl shadow-indigo-600/20 ring-4 ring-[#030303] overflow-hidden ${isEditing ? "cursor-pointer group" : ""}`}
+                onClick={() => isEditing && document.getElementById("avatarUpload")?.click()}
+              >
+                {currentAvatar ? (
+                  <img src={currentAvatar} alt="Avatar" className="h-full w-full object-cover" />
+                ) : (
+                  initials
+                )}
+                {isEditing && (
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="h-6 w-6 text-white" />
+                  </div>
+                )}
+              </div>
+              <input
+                id="avatarUpload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+              />
             </div>
 
             <div className="flex-1 min-w-0 pb-1">
@@ -246,6 +285,36 @@ export function ProfileSettings() {
         transition={{ duration: 0.5, delay: 0.1 }}
         className="rounded-2xl border border-white/[0.06] bg-white/[0.02] divide-y divide-white/[0.05]"
       >
+        {/* Section Header with inline Edit buttons */}
+        <div className="flex items-center justify-between px-6 md:px-8 py-4 bg-white/[0.01]">
+          <h3 className="text-sm font-medium text-white/80">Personal Information</h3>
+          {!isEditing ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors"
+            >
+              <Pencil className="h-3.5 w-3.5" /> Edit Details
+            </button>
+          ) : (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleCancel}
+                className="text-xs font-medium text-white/40 hover:text-white/70 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors disabled:opacity-50"
+              >
+                {isSaving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}
+                {saveStatus === "success" ? "Saved" : "Save"}
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Email (always read-only) */}
         <div className="flex items-center gap-4 px-6 md:px-8 py-5">
           <div className="h-10 w-10 rounded-xl bg-white/[0.04] flex items-center justify-center flex-shrink-0">

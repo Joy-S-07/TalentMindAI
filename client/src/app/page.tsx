@@ -5,7 +5,7 @@ import { Navbar } from "@/components/navbar";
 
 export default function Home() {
   return (
-    <main className="bg-[#030303] min-h-screen">
+    <main className="min-h-screen">
       <Navbar />
       <DemoHeroGeometric />
       <FeaturesSection />
